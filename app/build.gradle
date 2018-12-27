@@ -1,36 +1,247 @@
 apply plugin: 'com.android.application'
+//apply plugin: 'com.google.protobuf'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    compileSdkVersion rootProject.ext.COMPILE_SDK_VERSION
+
     defaultConfig {
         applicationId "com.nurdcoder.nblbd"
-        minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdkVersion rootProject.ext.MIN_SDK_VERSION
+        targetSdkVersion rootProject.ext.TARGET_SDK_VERSION
+        versionCode rootProject.ext.VERSION_CODE
+        versionName rootProject.ext.VERSION_NAME
+        multiDexEnabled true
+
+        renderscriptTargetApi rootProject.ext.RENDER_SCRIPT_TARGET_API
+        renderscriptSupportModeEnabled true
+
+        setProperty("archivesBaseName", "NBLBD-$versionName")
+        vectorDrawables.useSupportLibrary = true
+
+        //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner "${applicationId}.runner.RxAndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath false
+            }
+        }
     }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
+    signingConfigs {
+        // TODO Add your release keystore in /keystore folder
+        release {
+            storeFile file('keystore/release.keystore')
+            keyAlias 'nurdcoder'
+            storePassword "$System.env.APP_KEY"
+            keyPassword "$System.env.APP_KEY"
+        }
+
+        debug {
+            storeFile file('keystore/debug.keystore')
+            keyAlias 'androiddebugkey'
+            storePassword 'android'
+            keyPassword 'android'
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
+
             minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            ext.betaDistributionReleaseNotesFilePath = file('../crashlytics_release_notes.txt').absolutePath
+        }
+
+        debug {
+            versionNameSuffix " Debug"
+            debuggable true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        def commonTestDir = 'src/commonTest/java'
+        test {
+            java.srcDir commonTestDir
+        }
+        androidTest {
+            java.srcDir commonTestDir
+        }
+    }
+
+    packagingOptions {
+        // pickFirst 'protobuf.meta'
+
+        exclude "META-INF/LICENSE.txt"
+        exclude "META-INF/NOTICE.txt"
+        exclude "META-INF/INDEX.LIST"
+        exclude "META-INF/io.netty.versions.properties"
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LGPL2.1'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'project.properties'
+        exclude 'META-INF/project.properties'
+        exclude 'META-INF/rxjava.properties'
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    configurations.all {
+        resolutionStrategy.force "com.android.support:support-annotations:$rootProject.SUPPORT_LIBRARY_VERSION"
+        resolutionStrategy.force "com.google.code.findbugs:jsr305:1.3.9"
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
 }
 
+//protobuf {
+//    protoc {
+//        artifact = 'com.google.protobuf:protoc:3.0.0'
+//    }
+//
+//    plugins {
+//        javalite {
+//            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
+//        }
+//    }
+//
+//    generateProtoTasks {
+//        all().each { task ->
+//            task.builtins {
+//                remove java
+//            }
+//            task.plugins {
+//                javalite {}
+//            }
+//        }
+//    }
+//}
+
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile project(path: ':Sweet Alert Dialog')
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:support-v4:25.3.1'
-    compile 'com.android.support:cardview-v7:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
-    compile 'com.mcxiaoke.volley:library:1.0.19'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':Sweet Alert Dialog')
+}
+dependencies {
+    implementation "com.android.support:appcompat-v7:$rootProject.SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:design:$rootProject.SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support.constraint:constraint-layout:$rootProject.CONSTRAINT_LAYOUT_VERSION"
+    implementation "com.android.support:support-vector-drawable:$rootProject.SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:animated-vector-drawable:$rootProject.SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:recyclerview-v7:$rootProject.SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:cardview-v7:$rootProject.SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:support-annotations:$rootProject.SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:percent:$rootProject.SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:exifinterface:$rootProject.SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:multidex:1.0.3"
+}
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    // androidTestImplementation "com.android.support.test:runner:$rootProject.RUNNER_VERSION"
+    // androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.ESPRESSO_VERSION"
+
+    // Test helpers for LiveData
+    //testImplementation "android.arch.core:core-testing:$rootProject.LIFECYCLE_VERSION"
+
+    // Test helpers for Room
+    //testImplementation "android.arch.persistence.room:testing:$rootProject.LIFECYCLE_VERSION"
+}
+dependencies {
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.RETROFIT_VERSION"
+    implementation "com.squareup.retrofit2:converter-gson:$rootProject.RETROFIT_VERSION"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.RETROFIT_VERSION"
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+}
+dependencies {
+    implementation 'org.apache.commons:commons-collections4:4.1'
+    implementation 'org.apache.commons:commons-lang3:3.6'
+}
+dependencies {
+    implementation 'com.mikhaellopez:circularimageview:3.0.2'
+    implementation 'com.loopj.android:android-async-http:1.4.9'
+    implementation "com.jakewharton:butterknife:$rootProject.BUTTERKNIFE_VERSION"
+
+    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation "com.parse:parse-android:$rootProject.PARSE_VERSION"
+    implementation 'com.race604.waveloading:library:1.1.1'
+
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
+    implementation 'id.zelory:compressor:2.1.0'
+    implementation 'com.mcxiaoke.volley:library:1.0.19'
+
+    implementation 'info.androidhive:barcode-reader:1.1.5'
+}
+dependencies {
+    //implementation 'com.google.protobuf:protobuf-lite:3.0.0'
+    //implementation 'com.google.protobuf:protobuf-java:3.4.0'
+    implementation 'com.google.android.gms:play-services-safetynet:16.0.0'
+    implementation 'com.google.android.gms:play-services-vision:17.0.2'
+    implementation 'com.google.code.gson:gson:2.8.2'
+}
+dependencies {
+    implementation "com.github.GrenderG:Toasty:1.3.0"
+    implementation "com.github.bumptech.glide:glide:4.7.1"
+    implementation 'com.github.daolq3012:AssetSQLiteOpenHelper:1.0'
+}
+dependencies {
+    // ViewModel and LiveData
+    implementation "android.arch.lifecycle:extensions:$rootProject.LIFECYCLE_VERSION"
+    // alternatively, just ViewModel
+    //implementation "android.arch.lifecycle:viewmodel:$rootProject.LIFECYCLE_VERSION"
+    // alternatively, just LiveData
+    //implementation "android.arch.lifecycle:livedata:$rootProject.LIFECYCLE_VERSION"
+
+    // Room (use 1.1.0-alpha1 for latest alpha)
+    implementation "android.arch.persistence.room:runtime:$rootProject.LIFECYCLE_VERSION"
+
+    // Paging
+    //implementation "android.arch.paging:runtime:$rootProject.LIFECYCLE_VERSION"
+
+    // Java8 support for Lifecycles
+    implementation "android.arch.lifecycle:common-java8:$rootProject.LIFECYCLE_VERSION"
+
+    // Lifecycles only (no ViewModel or LiveData)
+    //implementation "android.arch.lifecycle:runtime:$rootProject.LIFECYCLE_VERSION"
+
+    implementation 'android.arch.persistence.room:rxjava2:1.1.1'
+}
+dependencies {  //annotationProcessor
+    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.ROOM_VERSION"
+    annotationProcessor "android.arch.lifecycle:compiler:$rootProject.LIFECYCLE_VERSION"
+    //annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.DAGGER_VERSION"//skpaik: Comment Out
+    //annotationProcessor "com.google.auto.value:auto-value:$rootProject.AUTO_VALUE_VERSION"//skpaik: Comment Out
+    //annotationProcessor 'com.ryanharter.auto.value:auto-value-parcel:0.2.4-rc2'//skpaik: Comment Out
+    //annotationProcessor "com.ryanharter.auto.value:auto-value-gson:$rootProject.AUTO_VALUE_GSON_VERSION"//skpaik: Comment Out
+    //annotationProcessor 'com.squareup:javapoet:1.7.0'//skpaik: Comment Out
+    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.BUTTERKNIFE_VERSION"
+    annotationProcessor "com.github.bumptech.glide:compiler:4.4.0"
+}
+dependencies {  //debug only
+    debugImplementation "com.facebook.stetho:stetho:1.5.0"
+    debugImplementation 'com.awesomedroidapps:inappstoragereader:1.0.2'
+    //acra for crash reporting, temporay solution
+    debugImplementation 'ch.acra:acra:4.9.2'
+    //debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
 }
