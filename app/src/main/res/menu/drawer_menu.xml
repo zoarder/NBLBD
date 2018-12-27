@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/drawer_menu_product_services"
+            android:title="@string/drawer_menu_product_services_text" />
+
+        <item
+            android:id="@+id/drawer_menu_financial_status"
+            android:title="@string/drawer_menu_financial_status_text" />
+
+        <item
+            android:id="@+id/drawer_menu_service_location"
+            android:title="@string/drawer_menu_service_location_text" />
+
+        <item
+            android:id="@+id/drawer_menu_overseas_operation"
+            android:title="@string/drawer_menu_overseas_operation_text" />
+
+        <item
+            android:id="@+id/drawer_menu_about_us"
+            android:title="@string/drawer_menu_about_us_text" />
+
+        <item
+            android:id="@+id/drawer_menu_csr"
+            android:title="@string/drawer_menu_csr_text" />
+
+        <item
+            android:id="@+id/drawer_menu_career"
+            android:title="@string/drawer_menu_career_text" />
+
+        <item
+            android:id="@+id/drawer_menu_news_events"
+            android:title="@string/drawer_menu_news_events_text" />
+    </group>
+
+    <item android:title="Other">
+        <menu>
+            <item
+                android:id="@+id/drawer_menu_daily_exchange_rate"
+                android:title="@string/drawer_menu_daily_exchange_rate_text" />
+            <item
+                android:id="@+id/drawer_menu_contact_us"
+                android:title="@string/drawer_menu_contact_us_text" />
+            <item
+                android:id="@+id/drawer_menu_complain_cell"
+                android:title="@string/drawer_menu_complain_cell_text" />
+        </menu>
+    </item>
+
+</menu>
